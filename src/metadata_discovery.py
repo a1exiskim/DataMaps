@@ -72,5 +72,5 @@ def get_json_metadata(json_path):
         "fields": fields,
         "field type(s)": collection_of_types,
         "field null count": null_count,
-        "count of missing per fields": fields_missing_count
+        "count of missing per field": fields_missing_count
     }
