@@ -65,6 +65,11 @@ def get_json_metadata(json_path):
             for missing_key in missing_keys:
                 if missing_key not in fields_missing_count:
                     fields_missing_count[missing_key] = record_count - 1
+
+    completeness = {}
+
+    for field in fields:
+        completeness[field] = round((record_count - null_count[field] - fields_missing_count[field]) / record_count, 2) * 100
         
 
     return {
@@ -72,5 +77,6 @@ def get_json_metadata(json_path):
         "fields": fields,
         "field type(s)": collection_of_types,
         "field null count": null_count,
-        "count of missing per field": fields_missing_count
+        "count of missing per field": fields_missing_count,
+        "completeness of field": completeness
     }
