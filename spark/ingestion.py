@@ -15,7 +15,7 @@ class Source:
         if isinstance(location, str):
             self.location = location  # i.e filesystem path, database identifer 
         else:
-            raise TypeError(' location must be string.')
+            raise TypeError('location must be string.')
 
         if unsupported_format is not None and isinstance(unsupported_format, set):
             self.unsupported_format = unsupported_format
