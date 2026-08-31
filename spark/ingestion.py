@@ -7,7 +7,7 @@ class Source:
         else:
             raise TypeError('source type must be string.')
 
-        if isinstance(format, set):
+        if isinstance(supported_format, set):
             self.supported_format = supported_format # i.e json, postgres, parquet, etc
         else: 
             raise TypeError('format type must be set')
