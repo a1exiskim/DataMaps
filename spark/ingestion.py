@@ -10,7 +10,7 @@ class Source:
         if isinstance(format, set):
             self.supported_format = supported_format # i.e json, postgres, parquet, etc
         else: 
-            raise TypeError('format type must be string')
+            raise TypeError('format type must be set')
 
         if isinstance(location, str):
             self.location = location  # i.e filesystem path, database identifer 
