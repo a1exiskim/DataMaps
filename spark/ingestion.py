@@ -1,7 +1,7 @@
 from pathlib import Path
 
 class Source:
-    def __init__(self, source_type, formats, location):
+    def __init__(self, source_type, formats, location, files_by_format):
         if isinstance(source_type, str):
             self.source_type = source_type  # i.e. file or database
         else:
@@ -15,38 +15,45 @@ class Source:
         if isinstance(location, str):
             self.location = location  # i.e filesystem path, database identifer 
         else:
-            raise TypeError('location must be string.')    
+            raise TypeError('location must be string.')   
+
+        if isinstance(files_by_format, dict):
+            self.files_by_format = files_by_format
+        else:
+            raise TypeError('files and their formats should be in a dictionary') 
 
 
 def identify_source(location):
-    file_ext = set()
-    format_names = {}
+    files_by_format = {}
 
     path_location = Path(location)
 
     if path_location.is_file():
-        extension = path_location.suffix
-        file_ext.add(extension)
+        file = path_location
+        file_format = file.suffix[1:].lower()
+
+        files_by_format.setdefault(file_format, []).append(str(file))
+
     elif path_location.is_dir():
         for file in path_location.iterdir():
             if file.is_file():
-                file_ext.add(file.suffix)
+                file_format = file.suffix[1:].lower()
+
+                files_by_format.setdefault(file_format, []).append(str(file))
+
     else:
         raise ValueError("location must point to a valid file or directory")
 
-    # create mapping of extensions to normalized extension name
-    for ext in file_ext:
-        format_names[ext] = ext[1:].lower()
-
-    formats = set(format_names.values())
+    formats = set(files_by_format.keys())
 
     if len(formats) == 0:
-        raise ValueError('no file formats found')
+        raise ValueError("no file formats found")
 
     source = Source(
-        'file',
+        "file",
         formats,
         location,
+        files_by_format
     )
 
     return source
