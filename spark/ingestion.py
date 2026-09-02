@@ -1,6 +1,12 @@
 from pathlib import Path
 
 class Source:
+    """Represents an identified data source and its associated metadata.
+
+    Stores the source type, available data formats, source location, and the
+    files grouped by their format.
+    """
+
     def __init__(self, source_type, formats, location, files_by_format):
         if isinstance(source_type, str):
             self.source_type = source_type  # i.e. file or database
@@ -24,6 +30,16 @@ class Source:
 
 
 def identify_source(location):
+    """
+    Identifies a file-based data source from a given location.
+
+    Determines whether the location is a file or directory, identifies the
+    formats of the files found, and groups file paths by format.
+
+    Args:
+        location: Path to a file or directory containing data files.
+    """
+    
     files_by_format = {}
 
     path_location = Path(location)
