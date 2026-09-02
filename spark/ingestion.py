@@ -7,34 +7,28 @@ class Source:
     files grouped by their format.
     """
 
-    def __init__(self, source_type, formats, location, files_by_format):
+    def __init__(self, source_type, location, source_info):
         if isinstance(source_type, str):
             self.source_type = source_type  # i.e. file or database
         else:
             raise TypeError('source type must be string.')
-
-        if isinstance(formats, set):
-            self.formats = formats # i.e json, postgres, parquet, etc
-        else: 
-            raise TypeError('format type must be set')
 
         if isinstance(location, str):
             self.location = location  # i.e filesystem path, database identifer 
         else:
             raise TypeError('location must be string.')   
 
-        if isinstance(files_by_format, dict):
-            self.files_by_format = files_by_format
+        if isinstance(source_info, dict):
+            self.source_info = source_info
         else:
-            raise TypeError('files and their formats should be in a dictionary') 
+            raise TypeError('specific source information should be in a dictionary') 
 
 
-def identify_source(location):
+def identify_file_source(location):
     """
     Identifies a file-based data source from a given location.
 
-    Determines whether the location is a file or directory, identifies the
-    formats of the files found, and groups file paths by format.
+    Determines whether the location is a file or directory, groups discovered file paths by format.
 
     Args:
         location: Path to a file or directory containing data files.
@@ -60,15 +54,13 @@ def identify_source(location):
     else:
         raise ValueError("location must point to a valid file or directory")
 
-    formats = set(files_by_format.keys())
 
-    if len(formats) == 0:
+    if len(files_by_format) == 0:
         raise ValueError("no file formats found")
 
     source = Source(
         "file",
-        formats,
-        location,
+        str(location),
         files_by_format
     )
 
