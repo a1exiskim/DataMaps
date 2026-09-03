@@ -6,6 +6,7 @@ from pyspark.sql import Row
 from spark.ingestion import Source
 from spark.ingestion import identify_file_source
 from spark.readers.generic_file_reader import GenericFileReader
+import pyarrow as pa
 
 spark = (
     SparkSession.builder
@@ -87,7 +88,6 @@ def test_Source():
     assert source.source_info == source_info
 
 
-
 def test_identify_file_source():
     location = Path(__file__).parent / "test.csv"
 
@@ -114,3 +114,78 @@ def test_identify_file_from_directory_source(tmp_path):
         "json": [str(json_file)]
     }
 
+
+def test_read_raw_csv(tmp_path):
+    reader = GenericFileReader(spark)
+    file_path = tmp_path / "test.csv"
+
+    file_path.write_text(
+        "name,age,city\n"
+        "Alice,20,Toronto\n"
+        "Bob,25,Waterloo\n"
+    )
+
+    records = list(reader.read_raw(file_path))
+
+    assert records == [
+        {"name": "Alice", "age": "20", "city": "Toronto"},
+        {"name": "Bob", "age": "25", "city": "Waterloo"},
+    ]
+
+
+def test_read_raw_ndjson(tmp_path):
+    file_path = tmp_path / "test.ndjson"
+
+    file_path.write_text(
+        '{"name": "Alice", "age": 20}\n'
+        '{"name": "Bob", "age": 25}\n'
+    )
+
+    reader = GenericFileReader(spark)
+
+    records = list(reader.read_raw(file_path))
+
+    assert records == [
+        {"name": "Alice", "age": 20},
+        {"name": "Bob", "age": 25},
+    ]
+
+
+def test_read_raw_json(tmp_path):
+    file_path = tmp_path / "test.json"
+
+    file_path.write_text(
+        '[\n'
+        '    {"name": "Alice", "age": 20},\n'
+        '    {"name": "Bob", "age": 25}\n'
+        ']'
+    )
+
+    reader = GenericFileReader(spark)
+
+    records = list(reader.read_raw(file_path))
+
+    assert records == [
+        {"name": "Alice", "age": 20},
+        {"name": "Bob", "age": 25},
+    ]
+
+
+def test_read_raw_parqut(tmp_path):
+    file_path = tmp_path / "test.parquet"
+
+    table = pa.table({
+        "name": ["Alice", "Bob"],
+        "age": [20, 25],
+    })
+
+    pa.parquet.write_table(table, file_path)
+
+    reader = GenericFileReader(spark)
+
+    records = list(reader.read_raw(file_path))
+
+    assert records == [
+        {"name": "Alice", "age": 20},
+        {"name": "Bob", "age": 25},
+    ]
