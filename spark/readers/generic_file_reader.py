@@ -1,4 +1,9 @@
 from spark.readers.reader import Reader
+from pathlib import Path
+import csv
+import json
+import ijson
+import pyarrow.parquet as pq
 
 class GenericFileReader(Reader):
     
@@ -12,8 +17,16 @@ class GenericFileReader(Reader):
 
     supported_formats = {'csv', 'json', 'parquet', 'orc', 'avro', 'text'}
 
+
     def __init__(self, spark):
         self.spark = spark
+
+        self.handlers = {
+                ".csv": self._read_csv_raw,
+                ".ndjson": self._read_ndjson_raw,
+                ".json": self._read_json_raw,
+                ".parquet": self._read_parquet_raw
+        }
 
     def read(self, source, format, options):
         """
@@ -36,4 +49,40 @@ class GenericFileReader(Reader):
 
 
         return df
+
+
+    def read_raw(self, file_path: Path):
+        extension = file_path.suffix.lower()
+
+        handler = self.handlers[extension]
+
+        return handler(file_path)    
+
+
+    def _read_csv_raw(self, file_path):
+        with file_path.open("r") as file:
+            rows = csv.DictReader(file)
+
+            for row in rows:
+                yield row
+
+    def _read_ndjson_raw(self, file_path):
+        with file_path.open("r") as file:
+            for line in file:
+                row = json.loads(line)
             
+                yield row
+
+    def _read_json_raw(self, file_path):
+        """This reader onnly supports top-level array JSON"""
+        with file_path.open("r") as file:
+            rows = ijson.items(file, "item")
+            for row in rows:
+                yield row
+
+    def _read_parquet_raw(self, file_path):
+        open_file = pq.ParquetFile(file_path)
+
+        for batch in open_file.iter_batches():
+            for row in batch.to_pylist():
+                yield row
