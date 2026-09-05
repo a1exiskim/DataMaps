@@ -74,8 +74,9 @@ class GenericFileReader(Reader):
                 yield row
 
     def _read_json_raw(self, file_path):
-        """This reader onnly supports top-level array JSON"""
-        with file_path.open("r") as file:
+        """This reader only supports top-level array JSON"""
+        
+        with file_path.open("rb") as file:
             rows = ijson.items(file, "item")
             for row in rows:
                 yield row
