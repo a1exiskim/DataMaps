@@ -10,7 +10,7 @@ class GenericFileReader(Reader):
     """
     Reader implementation for loading common file-based data formats using Spark.
 
-    Supports CSV, JSON, Parquet, ORC, Avro, and text files. Validates that the
+    Supports CSV, JSON, NDJSON, Parquet. Validates that the
     requested format is available in the source and supported by this reader
     before loading the files into a Spark DataFrame.
     """
@@ -75,7 +75,7 @@ class GenericFileReader(Reader):
 
     def _read_json_raw(self, file_path):
         """This reader only supports top-level array JSON"""
-        
+
         with file_path.open("rb") as file:
             rows = ijson.items(file, "item")
             for row in rows:

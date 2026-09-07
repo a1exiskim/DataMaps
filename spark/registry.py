@@ -1,4 +1,6 @@
 class ReaderRegistry:
+    """Registry for mapping data formats to their corresponding readers."""
+
     def __init__(self):
         self.readers = {}
 
@@ -7,7 +9,6 @@ class ReaderRegistry:
             raise TypeError("Format must be type string.")
         elif format in self.readers:
             raise ValueError("This format is already registered.")
-    
         
         self.readers[format] = reader
 

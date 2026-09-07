@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from spark.ingestion import Source
 
 class Reader(ABC):
+    """Defines the interface for reading data sources and raw records."""
 
     @abstractmethod
     def read(self, source):
