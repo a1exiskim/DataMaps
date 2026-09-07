@@ -1,7 +1,5 @@
 from pathlib import Path 
 from datetime import datetime
-import json
-import ijson
 
 def get_source_metadata(source: Path):
     """
