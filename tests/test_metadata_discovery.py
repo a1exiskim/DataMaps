@@ -90,21 +90,21 @@ def test_get_quality_metadata_directory(tmp_path):
 
     metadata = get_quality_metadata(source, reader)
 
-    assert metadata["customers.csv"]["record count"] == 3
-    assert metadata["customers.csv"]["null counts"] == {
+    assert metadata[str(file_1)]["record_count"] == 3
+    assert metadata[str(file_1)]["null_counts"] == {
         "age": 1,
         "city": 1
     }
-    assert metadata["customers.csv"]["null percentages"] == {
+    assert metadata[str(file_1)]["null percentages"] == {
         "age": 33.33,
         "city": 33.33
     }
-    assert metadata["customers.csv"]["type issues"] == {}
+    assert metadata[str(file_1)]["type_issues"] == {}
 
-    assert metadata["orders.csv"]["record count"] == 3
-    assert metadata["orders.csv"]["null counts"] == {}
-    assert metadata["orders.csv"]["null percentages"] == {}
-    assert metadata["orders.csv"]["type issues"] == {} 
+    assert metadata[str(file_2)]["record_count"] == 3
+    assert metadata[str(file_2)]["null_counts"] == {}
+    assert metadata[str(file_2)]["null percentages"] == {}
+    assert metadata[str(file_2)]["type_issues"] == {} 
 
 
 def test_get_quality_metadata_file(tmp_path):
@@ -121,16 +121,16 @@ def test_get_quality_metadata_file(tmp_path):
 
     metadata = get_quality_metadata(source, reader)
 
-    assert metadata["customers.csv"]["record count"] == 3
-    assert metadata["customers.csv"]["null counts"] == {
+    assert metadata[str(file_path)]["record_count"] == 3
+    assert metadata[str(file_path)]["null_counts"] == {
         "age": 1,
         "city": 1
     }
-    assert metadata["customers.csv"]["null percentages"] == {
+    assert metadata[str(file_path)]["null percentages"] == {
         "age": 33.33,
         "city": 33.33
     }
-    assert metadata["customers.csv"]["type issues"] == {}
+    assert metadata[str(file_path)]["type_issues"] == {}
 
 
 def test_get_quality_metadata_invalid_location(tmp_path):

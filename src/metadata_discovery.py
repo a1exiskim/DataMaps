@@ -114,7 +114,7 @@ def get_quality_metadata(source, reader):
         for null_field in null_counts:
             null_percent[null_field] = round((null_counts[null_field] / record_count) * 100, 2) 
 
-        quality_metadata[item.name] = {
+        quality_metadata[str(item)] = {
             'record_count': record_count,
             'null_counts': null_counts,
             'null percentages': null_percent,
