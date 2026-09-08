@@ -28,25 +28,26 @@ class GenericFileReader(Reader):
                 ".parquet": self._read_parquet_raw
         }
 
-    def read(self, source, format, options):
+    def read(self, file_path, format, options):
         """
-        Reads files from a source using the specified format and Spark options.
+        Reads file from a file path using the specified format and Spark options.
 
         Args:
-            source: Data source containing files grouped by format.
+            file_path: location to single file.
             format: File format to read.
             options: Spark reader options to apply.
+
+        Returns:
+            A Spark DataFrame containing the file's data.
         """
 
-        if format not in source.source_info:
-            raise ValueError("format not found in source")
-
+        
         if format not in self.supported_formats:
             raise ValueError("format not supported by GenericFileReader")
+        if Path(file_path).suffix[1:] != format:
+            raise ValueError("format and reader do not match")
 
-        files = source.source_info[format]
-        df = self.spark.read.format(format).options(**options).load(files)
-
+        df = self.spark.read.format(format).options(**options).load(str(file_path))
 
         return df
 

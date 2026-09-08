@@ -20,21 +20,16 @@ spark = (
 def test_generic_reader():
     test_file = Path(__file__).parent / "test.csv"
 
-    source = Source(
-        "file",
-        str(test_file),
-        {"csv": [str(test_file)]}
-    )
-
     reader = GenericFileReader(spark)
 
     df = reader.read(
-        source,
+        test_file,
         "csv",
         {'header': 'true', 'inferSchema': 'true'}
     )
 
     assert isinstance(df, DataFrame)
+    assert df.count() == 3
     assert df.columns == ['name', 'age', 'city']
     assert df.collect() == [
         Row(name='Alice', age=20, city='Toronto'),
@@ -43,32 +38,20 @@ def test_generic_reader():
     ]
 
 
-def test_generic_reader_invalid_format():
+def test_generic_reader_format_extension_mismatch():
     test_file = Path(__file__).parent / "test.csv"
-
-    source = Source(
-        "file",
-        str(test_file),
-        {"csv": [str(test_file)]}
-    )
 
     reader = GenericFileReader(spark)
 
     with pytest.raises(ValueError):
-        reader.read(source, "json", {})
+        reader.read(test_file, "json", {})
 
 
 def test_generic_reader_unsupported_format():
-    source = Source(
-        "file",
-        "test.xml",
-        {"xml": ["test.xml"]}
-    )
-
     reader = GenericFileReader(spark)
 
     with pytest.raises(ValueError):
-        reader.read(source, "xml", {})
+        reader.read("test.xml", "xml", {})
 
 
 def test_Source():
