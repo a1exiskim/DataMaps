@@ -78,7 +78,7 @@ def get_quality_metadata(source, reader):
     else:
         raise ValueError('invalid file.')
 
-    for item in items: 
+    for item in items: # item corresponds to a single file
         record_count = 0
         null_counts = {}
         null_percent = {}
@@ -87,7 +87,7 @@ def get_quality_metadata(source, reader):
 
         records = reader.read_raw(item)
 
-        for record in records:  
+        for record in records:  # record is a single row in an item
             record_count += 1
 
             if isinstance(record, dict):
@@ -115,10 +115,10 @@ def get_quality_metadata(source, reader):
             null_percent[null_field] = round((null_counts[null_field] / record_count) * 100, 2) 
 
         quality_metadata[item.name] = {
-            'record count': record_count,
-            'null counts': null_counts,
+            'record_count': record_count,
+            'null_counts': null_counts,
             'null percentages': null_percent,
-            'type issues': type_issues
+            'type_issues': type_issues
         }
 
     return quality_metadata
